@@ -1,7 +1,9 @@
-name: Stage the application
+name: Deploy the application to Prod
 
 on:
-  branch: main
+  push:
+    branches:
+      - main
 
 env:
   AZURE_RESOURCE_GROUP_PROD: node-resource-group-prod
@@ -12,8 +14,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    if: contains(github.event.pull_request.labels.*.name, 'stage')
 
     steps:
       - uses: actions/checkout@master

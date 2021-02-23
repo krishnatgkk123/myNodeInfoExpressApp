@@ -5,11 +5,10 @@ on:
     types: [labeled]
 
 env:
-  AZURE_RESOURCE_GROUP: node-resource-group
-  AZURE_APP_PLAN: node-action-plan
+  AZURE_RESOURCE_GROUP: node-resource-group-stage
+  AZURE_APP_PLAN: node-action-plan-stage
   AZURE_LOCATION: '"Central US"'
-  AZURE_WEBAPP_NAME: mynodeinfoexpressapp
-
+  AZURE_WEBAPP_NAME: mynodeinfoexpressapp-stage
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -15,7 +15,7 @@ env:
   AZURE_WEBAPP_NAME_PROD: mynodeinfoexpressapp-prod
 
 jobs:
-  build:
+  setup-up-azure-stage-resources:
     runs-on: ubuntu-latest
 
     if: contains(github.event.pull_request.labels.*.name, 'spin up stage')
@@ -56,6 +56,8 @@ jobs:
         run: |
           az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }} --runtime "node|12-lts" --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
 
+  setup-up-azure-prod-resources:
+    runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'spin up prod')
 
     steps:

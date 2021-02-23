@@ -27,10 +27,3 @@ jobs:
         npm run build --if-present
         npm run test --if-present
 
-    - name: 'Deploy to Azure Web App'
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'mynodeinfoexpressapp'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_ea98c79bd3084f37b594ea632bea93ae }}
-        package: .

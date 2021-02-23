@@ -1,0 +1,37 @@
+name: Stage the app
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    if: contains(github.event.pull_request.labels.*.name, 'stage')
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: staging
+    
+    - name: Set up Node.js version
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    
+    - name: npm install, build, and test
+      run: |
+        npm install
+        npm run build --if-present
+        npm run test --if-present
+
+    - name: 'Deploy to Azure Web App'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'mynodeinfoexpressapp'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_ea98c79bd3084f37b594ea632bea93ae }}
+        package: .

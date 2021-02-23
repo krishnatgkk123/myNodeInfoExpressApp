@@ -4,6 +4,12 @@ on:
   pull_request:
     types: [labeled]
 
+env:
+  AZURE_RESOURCE_GROUP: node-resource-group
+  AZURE_APP_PLAN: node-action-plan
+  AZURE_LOCATION: '"Central US"'
+  AZURE_WEBAPP_NAME: mynodeinfoexpressapp
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,10 +32,28 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Azure resource group
+        if: success()
+        run: |
+          az group create --location ${{env.AZURE_LOCATION}} --name ${{env.AZURE_RESOURCE_GROUP}} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+
+      - name: Create Azure app service plan
+        if: success()
+        run: |
+          az appservice plan create --resource-group ${{env.AZURE_RESOURCE_GROUP}} --name ${{env.AZURE_APP_PLAN}} --is-linux --sku F1 --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+
+      - name: Create webapp resource
+        if: success()
+        run: |
+          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  --deployment-container-image-name nginx --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'mynodeinfoexpressapp'
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_ea98c79bd3084f37b594ea632bea93ae }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: .

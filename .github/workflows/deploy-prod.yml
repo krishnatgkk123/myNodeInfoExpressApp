@@ -1,14 +1,13 @@
 name: Stage the application
 
 on:
-  pull_request:
-    types: [labeled]
+  branch: main
 
 env:
-  AZURE_RESOURCE_GROUP: node-resource-group
-  AZURE_APP_PLAN: node-action-plan
-  AZURE_LOCATION: '"Central US"'
-  AZURE_WEBAPP_NAME: mynodeinfoexpressapp
+  AZURE_RESOURCE_GROUP_PROD: node-resource-group-prod
+  AZURE_APP_PLAN_PROD: node-action-plan-prod
+  AZURE_LOCATION_PROD: '"West US"'
+  AZURE_WEBAPP_NAME_PROD: mynodeinfoexpressapp-prod
 
 jobs:
   build:
@@ -17,9 +16,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'stage')
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: staging
+      - uses: actions/checkout@master
 
       - name: Set up Node.js version
         uses: actions/setup-node@v1
@@ -40,5 +37,5 @@ jobs:
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME_PROD }}
           package: .
